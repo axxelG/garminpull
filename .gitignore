@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Virtual envs
+.venv/
+venv/
+
+# Secrets and Garmin tokens
+.env
+.garminconnect/
+
+# Downloaded activity files
+downloads/
+*.fit
+*.tcx
+*.gpx
+*.kml
