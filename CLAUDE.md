@@ -9,8 +9,8 @@ poetry install                       # set up the venv and dependencies
 poetry run pytest                    # run all tests (offline — Garmin is faked)
 poetry run pytest tests/test_downloader.py::test_download_fit_unpacks_zip  # single test
 poetry run ruff check .              # lint
-poetry run garminpull --help   # CLI entry point
-poetry run garminpull --dry-run  # list matches without downloading (safe, but still hits Garmin auth)
+poetry run garminpull --help              # CLI entry point (also shown when run with no args)
+poetry run garminpull pool-swim --dry-run # list matches without downloading (still hits Garmin auth)
 ```
 
 ## Architecture
@@ -44,6 +44,7 @@ only Garmin API surface; we never call Garmin's HTTP endpoints directly.
 - Keep `downloader.py` and `config.py` free of network calls and Typer so they stay unit-
   testable. Tests use a `FakeClient` implementing only `get_activities`,
   `get_activities_by_date`, and `download_activity` — mirror that surface when extending.
-- Defaults encode the primary use case: pool swims (`pool-swim`) as `fit`. Preserve those
-  defaults unless asked otherwise.
+- `activity` is a required positional argument (no default); running with no args prints
+  help and exits 0 (handled manually via `ctx.get_help()`). The output format still
+  defaults to `fit`. Preserve this unless asked otherwise.
 - `typer` must be `>=0.15` — earlier versions break against the installed `click` 8.5.

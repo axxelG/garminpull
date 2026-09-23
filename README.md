@@ -26,29 +26,31 @@ cp .env.example .env   # then edit GARMIN_EMAIL / GARMIN_PASSWORD
 
 ## Usage
 
+The activity is a required positional argument. Running with no arguments prints help.
+
 ```bash
-# Default: all pool swims as FIT files into ./downloads
-poetry run garminpull
+# All pool swims as FIT files into ./downloads
+poetry run garminpull pool-swim
 
 # Every activity in a date range, as TCX
-poetry run garminpull --activity all --format tcx --since 2026-01-01 --until 2026-09-23
+poetry run garminpull all --format tcx --since 2026-01-01 --until 2026-09-23
 
 # Last 10 runs, into a custom folder
-poetry run garminpull --activity run --limit 10 --output-dir ~/runs
+poetry run garminpull run --limit 10 --output-dir ~/runs
 
 # See what would be downloaded without fetching anything
-poetry run garminpull --dry-run
+poetry run garminpull pool-swim --dry-run
 
 # Any Garmin activity typeKey works even without a preset
-poetry run garminpull --activity indoor_rowing
+poetry run garminpull indoor_rowing
 ```
 
 Run `poetry run garminpull --help` for all options.
 
 ### Activity presets
 
-`pool-swim` (default), `open-water-swim`, `swim`, `run`, `bike`, `all`. Anything else is
-treated as a raw Garmin `typeKey`.
+`pool-swim`, `open-water-swim`, `swim`, `run`, `bike`, `all`. Anything else is treated as
+a raw Garmin `typeKey`.
 
 ### Formats
 

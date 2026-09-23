@@ -12,7 +12,6 @@ from . import client as garmin_client
 from . import downloader
 from .config import (
     ACTIVITY_PRESETS,
-    DEFAULT_ACTIVITY,
     DEFAULT_FORMAT,
     FORMATS,
     resolve_type_keys,
@@ -28,14 +27,13 @@ def _parse_date(value: str | None) -> date | None:
 
 
 def pull(
-    activity: str = typer.Option(
-        DEFAULT_ACTIVITY,
-        "--activity",
-        "-a",
+    ctx: typer.Context,
+    activity: str = typer.Argument(
+        None,
         help=(
-            "Activity preset ("
+            "Activity to pull — a preset ("
             + ", ".join(ACTIVITY_PRESETS)
-            + ") or a raw Garmin typeKey (e.g. lap_swimming)."
+            + ") or a raw Garmin typeKey (e.g. lap_swimming). Required."
         ),
     ),
     fmt: str = typer.Option(
@@ -59,6 +57,10 @@ def pull(
     ),
 ) -> None:
     """Download activities matching the selected type and date range."""
+
+    if activity is None:
+        typer.echo(ctx.get_help())
+        raise typer.Exit()
 
     load_dotenv()
 
