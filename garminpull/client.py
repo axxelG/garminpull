@@ -7,6 +7,7 @@ those tokens so credentials and MFA are only needed once until the tokens expire
 
 from __future__ import annotations
 
+import getpass
 import os
 from pathlib import Path
 
@@ -28,8 +29,10 @@ def login(
     """Return a logged-in :class:`Garmin` client.
 
     Tries to resume from stored tokens first. If that fails, falls back to a full
-    email/password login (prompting for an MFA code on the terminal when required)
-    and persists fresh tokens for next time.
+    email/password login and persists fresh tokens for next time. Credentials come
+    from the arguments, then the environment (``GARMIN_EMAIL`` / ``GARMIN_PASSWORD``,
+    typically via an optional ``.env``), and are finally prompted for interactively if
+    still missing. An MFA one-time code is prompted for on the terminal when required.
     """
 
     store = _tokenstore_path(tokenstore)
@@ -41,13 +44,10 @@ def login(
     except (FileNotFoundError, Exception):  # noqa: BLE001 - any resume failure -> full login
         pass
 
-    email = email or os.getenv("GARMIN_EMAIL")
-    password = password or os.getenv("GARMIN_PASSWORD")
+    email = email or os.getenv("GARMIN_EMAIL") or input("Garmin email: ").strip()
+    password = password or os.getenv("GARMIN_PASSWORD") or getpass.getpass("Garmin password: ")
     if not email or not password:
-        raise RuntimeError(
-            "No valid Garmin tokens found and GARMIN_EMAIL / GARMIN_PASSWORD are not set. "
-            "Set them (e.g. in a .env file) or run once interactively to authenticate."
-        )
+        raise RuntimeError("A Garmin email and password are required to authenticate.")
 
     client = Garmin(email=email, password=password, return_on_mfa=True)
     result_state, result_data = client.login()

@@ -15,7 +15,10 @@ poetry install
 
 The first run needs your Garmin credentials (and an MFA code if your account uses
 two-factor auth). After that, OAuth tokens are cached under `~/.garminconnect` and
-reused automatically.
+reused automatically — no credentials needed until they expire.
+
+By default garminpull just **prompts** for your email and password on that first run, so
+no setup is required. If you'd rather not be prompted, put them in an optional `.env`:
 
 ```bash
 cp .env.example .env   # then edit GARMIN_EMAIL / GARMIN_PASSWORD
