@@ -1,8 +1,8 @@
 # garminpull
 
 Pull your activities from [Garmin Connect](https://connect.garmin.com) and save them
-locally. Defaults to downloading **pool swim** sessions as **FIT** files, but the
-activity type, date range, and output format are all selectable — so you can grab a
+locally. You choose the activity type (e.g. **pool swim**) as a required argument; the
+date range and output format (**FIT** by default) are also selectable — so you can grab a
 single sport or your entire history in whatever format you need.
 
 ## Install

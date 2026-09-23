@@ -54,8 +54,6 @@ ACTIVITY_PRESETS: dict[str, frozenset[str]] = {
     "all": ALL_ACTIVITIES,
 }
 
-DEFAULT_ACTIVITY = "pool-swim"
-
 
 def resolve_type_keys(preset_or_type: str) -> frozenset[str]:
     """Resolve a CLI activity argument to the set of matching Garmin ``typeKey`` values.
