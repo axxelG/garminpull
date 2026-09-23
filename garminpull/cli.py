@@ -18,12 +18,6 @@ from .config import (
     resolve_type_keys,
 )
 
-app = typer.Typer(
-    add_completion=False,
-    help="Pull activities from Garmin Connect and save them locally.",
-)
-
-
 def _parse_date(value: str | None) -> date | None:
     if value is None:
         return None
@@ -33,7 +27,6 @@ def _parse_date(value: str | None) -> date | None:
         raise typer.BadParameter(f"Dates must be YYYY-MM-DD, got {value!r}") from exc
 
 
-@app.command()
 def pull(
     activity: str = typer.Option(
         DEFAULT_ACTIVITY,
@@ -108,5 +101,10 @@ def pull(
     typer.echo(f"Done. {saved} saved, {skipped} skipped in {output_dir}/")
 
 
+def main() -> None:
+    """Console-script entry point: a single command, no subcommand name."""
+    typer.run(pull)
+
+
 if __name__ == "__main__":
-    app()
+    main()

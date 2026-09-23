@@ -9,8 +9,8 @@ poetry install                       # set up the venv and dependencies
 poetry run pytest                    # run all tests (offline — Garmin is faked)
 poetry run pytest tests/test_downloader.py::test_download_fit_unpacks_zip  # single test
 poetry run ruff check .              # lint
-poetry run garminpull pull --help   # CLI entry point
-poetry run garminpull pull --dry-run  # list matches without downloading (safe, but still hits Garmin auth)
+poetry run garminpull --help   # CLI entry point
+poetry run garminpull --dry-run  # list matches without downloading (safe, but still hits Garmin auth)
 ```
 
 ## Architecture
@@ -34,7 +34,9 @@ only Garmin API surface; we never call Garmin's HTTP endpoints directly.
   then always applies the exact **client-side** `typeKey` filter because Garmin's category
   filter can't distinguish pool from open water. `is_zip` formats (`fit`) come as a ZIP
   that gets unpacked to the target extension.
-- **`cli.py`** — Typer app; the console script `garminpull` maps to `cli:app`. Loads
+- **`cli.py`** — single Typer command run via `typer.run(pull)`; the console script
+  `garminpull` maps to `cli:main`, so it's invoked as `garminpull [OPTIONS]` with no
+  subcommand. Loads
   `.env` before auth.
 
 ## Conventions specific to this repo

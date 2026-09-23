@@ -28,22 +28,22 @@ cp .env.example .env   # then edit GARMIN_EMAIL / GARMIN_PASSWORD
 
 ```bash
 # Default: all pool swims as FIT files into ./downloads
-poetry run garminpull pull
+poetry run garminpull
 
 # Every activity in a date range, as TCX
-poetry run garminpull pull --activity all --format tcx --since 2026-01-01 --until 2026-09-23
+poetry run garminpull --activity all --format tcx --since 2026-01-01 --until 2026-09-23
 
 # Last 10 runs, into a custom folder
-poetry run garminpull pull --activity run --limit 10 --output-dir ~/runs
+poetry run garminpull --activity run --limit 10 --output-dir ~/runs
 
 # See what would be downloaded without fetching anything
-poetry run garminpull pull --dry-run
+poetry run garminpull --dry-run
 
 # Any Garmin activity typeKey works even without a preset
-poetry run garminpull pull --activity indoor_rowing
+poetry run garminpull --activity indoor_rowing
 ```
 
-Run `poetry run garminpull pull --help` for all options.
+Run `poetry run garminpull --help` for all options.
 
 ### Activity presets
 
