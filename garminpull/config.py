@@ -67,3 +67,37 @@ def resolve_type_keys(preset_or_type: str) -> frozenset[str]:
     if preset_or_type in ACTIVITY_PRESETS:
         return ACTIVITY_PRESETS[preset_or_type]
     return frozenset({preset_or_type})
+
+
+# Precise ``typeKey`` -> Garmin's coarse parent category, which is the value the list
+# endpoints accept as a server-side ``activitytype`` filter. We can only pre-narrow on
+# the server when every requested ``typeKey`` shares one parent (see
+# :func:`coarse_category`); the exact ``typeKey`` filtering still happens client-side.
+TYPEKEY_CATEGORY: dict[str, str] = {
+    "lap_swimming": "swimming",
+    "open_water_swimming": "swimming",
+    "running": "running",
+    "treadmill_running": "running",
+    "trail_running": "running",
+    "cycling": "cycling",
+    "road_biking": "cycling",
+    "mountain_biking": "cycling",
+    "indoor_cycling": "cycling",
+}
+
+
+def coarse_category(type_keys: frozenset[str]) -> str | None:
+    """Return the shared Garmin parent category for a server-side pre-filter, or None.
+
+    Returns None when ``type_keys`` is empty (means "all types"), when any key is
+    unknown to :data:`TYPEKEY_CATEGORY` (e.g. a raw ``typeKey`` we can't map), or when
+    the keys span more than one parent category. In every None case the caller must fall
+    back to fetching all activities and filtering client-side.
+    """
+
+    if not type_keys:
+        return None
+    categories = {TYPEKEY_CATEGORY.get(key) for key in type_keys}
+    if None in categories or len(categories) != 1:
+        return None
+    return next(iter(categories))

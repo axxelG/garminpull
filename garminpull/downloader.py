@@ -10,7 +10,7 @@ from pathlib import Path
 
 from garminconnect import Garmin
 
-from .config import OutputFormat
+from .config import OutputFormat, coarse_category
 
 
 def _typekey(activity: dict) -> str:
@@ -26,15 +26,17 @@ def list_activities(
 ) -> list[dict]:
     """Return activities matching ``type_keys`` (empty set = all types).
 
-    When a date range is given, uses Garmin's date query; otherwise pages through the
-    most recent activities. Results are always filtered client-side on the precise
+    When a date range is given, uses Garmin's date query — pre-narrowed to a coarse
+    server-side category when all requested types share one (e.g. pool + open water ->
+    "swimming") to avoid pulling metadata for unrelated sports. Otherwise pages through
+    the most recent activities. Results are always filtered client-side on the precise
     ``typeKey`` for accuracy, then capped at ``limit`` if provided.
     """
 
     if start_date or end_date:
         start = (start_date or date.min).isoformat()
         end = (end_date or date.today()).isoformat()
-        activities = client.get_activities_by_date(start, end)
+        activities = client.get_activities_by_date(start, end, coarse_category(type_keys))
     else:
         activities = _recent_activities(client, limit, type_keys)
 

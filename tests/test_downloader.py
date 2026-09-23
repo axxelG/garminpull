@@ -1,5 +1,6 @@
 import io
 import zipfile
+from datetime import date
 from pathlib import Path
 
 from garminpull import downloader
@@ -21,11 +22,13 @@ class FakeClient:
     def __init__(self, activities, payloads=None):
         self._activities = activities
         self._payloads = payloads or {}
+        self.last_activitytype = "unset"
 
     def get_activities(self, start, limit):
         return self._activities[start : start + limit]
 
-    def get_activities_by_date(self, start, end):
+    def get_activities_by_date(self, start, end, activitytype=None):
+        self.last_activitytype = activitytype
         return self._activities
 
     def download_activity(self, activity_id, dl_fmt):
@@ -44,6 +47,29 @@ def test_list_activities_empty_typekeys_returns_all():
     client = FakeClient(acts)
     result = downloader.list_activities(client, type_keys=frozenset())
     assert len(result) == 2
+
+
+def test_date_range_prenarrows_to_coarse_category():
+    acts = [_activity(1, "lap_swimming")]
+    client = FakeClient(acts)
+    downloader.list_activities(
+        client,
+        type_keys=frozenset({"lap_swimming"}),
+        start_date=date(2026, 1, 1),
+        end_date=date(2026, 9, 23),
+    )
+    assert client.last_activitytype == "swimming"
+
+
+def test_date_range_no_prefilter_when_categories_span():
+    acts = [_activity(1, "lap_swimming")]
+    client = FakeClient(acts)
+    downloader.list_activities(
+        client,
+        type_keys=frozenset({"lap_swimming", "running"}),
+        start_date=date(2026, 1, 1),
+    )
+    assert client.last_activitytype is None
 
 
 def test_list_activities_respects_limit():

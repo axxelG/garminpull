@@ -28,10 +28,12 @@ only Garmin API surface; we never call Garmin's HTTP endpoints directly.
 - **`client.py`** — token-first auth. Resumes from cached OAuth tokens
   (`~/.garminconnect`, override with `GARMINTOKENS`); only falls back to email/password
   (+ interactive MFA prompt) when no valid tokens exist, then persists new ones.
-- **`downloader.py`** — pure, network-light logic. Filtering is done **client-side** on
-  the exact `typeKey` because Garmin's own category filter is coarse (e.g. "swimming"
-  covers both pool and open water). `is_zip` formats (`fit`) come as a ZIP that gets
-  unpacked to the target extension.
+- **`downloader.py`** — pure, network-light logic. Filtering is two-level: for date-range
+  queries it pre-narrows on Garmin's **coarse** server-side category (`coarse_category()`,
+  only when all requested types share one parent, e.g. pool + open water -> "swimming"),
+  then always applies the exact **client-side** `typeKey` filter because Garmin's category
+  filter can't distinguish pool from open water. `is_zip` formats (`fit`) come as a ZIP
+  that gets unpacked to the target extension.
 - **`cli.py`** — Typer app; the console script `garminpull` maps to `cli:app`. Loads
   `.env` before auth.
 
